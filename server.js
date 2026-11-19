@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Quick QR Server
  * - Chạy cục bộ: http://localhost:8088
  * - Tương thích Vercel Serverless Function & Node.js
