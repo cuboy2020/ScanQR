@@ -1,12 +1,16 @@
 {
-  "name": "scanqr",
+  "name": "quick-qr",
   "version": "1.0.0",
-  "description": "Quick QR Tool",
-  "main": "server.js",
+  "description": "Quick QR Tool - Quét & Tạo Mã QR Siêu Tốc",
   "scripts": {
     "start": "node server.js"
   },
-  "keywords": [],
-  "author": "Thanh Tai",
+  "keywords": [
+    "qr",
+    "scanner",
+    "generator",
+    "vietqr"
+  ],
+  "author": "Thành Tài",
   "license": "ISC"
 }
