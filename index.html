@@ -6,7 +6,13 @@
   <title>Quick QR</title>
   <meta name="description" content="Công cụ quét nhanh mã QR từ Clipboard (Ctrl+V), Kéo thả, File, Chụp màn hình, Webcam và tải ảnh mã QR về máy tính.">
   <meta name="author" content="Thành Tài">
-  <link rel="stylesheet" href="css/style.css">
+  <script>
+    // Tự động thêm dấu / ở cuối URL nếu chạy trên GitHub Pages để tránh lỗi 404 CSS/JS
+    if (location.pathname.split('/').length > 1 && !location.pathname.endsWith('/') && !location.pathname.endsWith('.html')) {
+      location.replace(location.pathname + '/' + location.search + location.hash);
+    }
+  </script>
+  <link rel="stylesheet" href="./css/style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
 </head>
 <body>
@@ -390,10 +396,10 @@
 
 
   <!-- Scripts -->
-  <script src="libs/jsQR.js"></script>
-  <script src="libs/qrcode.min.js"></script>
-  <script src="js/scanner.js"></script>
-  <script src="js/generator.js"></script>
-  <script src="js/app.js"></script>
+  <script src="./libs/jsQR.js"></script>
+  <script src="./libs/qrcode.min.js"></script>
+  <script src="./js/scanner.js"></script>
+  <script src="./js/generator.js"></script>
+  <script src="./js/app.js"></script>
 </body>
 </html>
