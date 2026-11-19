@@ -1,18 +1,11 @@
 {
   "name": "scanqr",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Quick QR Tool",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node local_server.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "dependencies": {
-    "davidshimjs-qrcodejs": "^0.0.2",
-    "jsqr": "^1.4.0",
-    "qrcode": "^1.5.4"
-  }
+  "author": "Thanh Tai",
+  "license": "ISC"
 }
