@@ -1,14 +1,16 @@
-/**
- * Lightweight Zero-dependency Local Server for Quick QR
- * Phục vụ các file tĩnh trên http://localhost:8088
+﻿/**
+ * Quick QR Server
+ * - Chạy cục bộ: http://localhost:8088
+ * - Tương thích Vercel Serverless Function & Node.js
  */
 
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const https = require('https');
 const { exec } = require('child_process');
 
-const PORT = 8088;
+const PORT = process.env.PORT || 8088;
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -22,9 +24,7 @@ const MIME_TYPES = {
   '.ico': 'image/x-icon'
 };
 
-const https = require('https');
-
-const server = http.createServer((req, res) => {
+function handler(req, res) {
   // Ho tro CORS Proxy de tai anh QR tu trang web khac
   if (req.url.startsWith('/proxy?url=')) {
     try {
@@ -52,14 +52,19 @@ const server = http.createServer((req, res) => {
 
   // Ho tro goi cong cu Cat man hinh he thong Windows (Win + Shift + S)
   if (req.url === '/api/win-snip') {
-    exec('explorer ms-screenclip:');
-    res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
-    res.end(JSON.stringify({ success: true }));
+    try {
+      exec('explorer ms-screenclip:');
+      res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+      res.end(JSON.stringify({ success: true }));
+    } catch (e) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: false }));
+    }
     return;
   }
 
   let reqUrl = req.url.split('?')[0];
-  if (reqUrl === '/') reqUrl = '/index.html';
+  if (reqUrl === '/' || reqUrl === '') reqUrl = '/index.html';
 
   const filePath = path.join(__dirname, reqUrl);
   fs.stat(filePath, (err, stats) => {
@@ -75,15 +80,22 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': contentType });
     fs.createReadStream(filePath).pipe(res);
   });
-});
+}
 
-server.listen(PORT, () => {
-  const url = `http://localhost:${PORT}`;
-  console.log(`===============================================`);
-  console.log(` Quick QR Server đang chạy tại: ${url}`);
-  console.log(` Nhấn Ctrl + C để dừng server khi không dùng nữa.`);
-  console.log(`===============================================`);
+// Xuất handler cho Vercel Node.js Serverless Function
+module.exports = handler;
 
-  // Tự động mở trình duyệt trên Windows
-  exec(`start ${url}`);
-});
+// Chạy trực tiếp khi chạy bằng lệnh node server.js hoặc run.bat
+if (require.main === module) {
+  const server = http.createServer(handler);
+  server.listen(PORT, () => {
+    const url = `http://localhost:${PORT}`;
+    console.log(`===============================================`);
+    console.log(` Quick QR Server đang chạy tại: ${url}`);
+    console.log(` Nhấn Ctrl + C để dừng server khi không dùng nữa.`);
+    console.log(`===============================================`);
+    if (process.platform === 'win32') {
+      exec(`start ${url}`);
+    }
+  });
+}

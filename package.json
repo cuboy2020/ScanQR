@@ -1,0 +1,12 @@
+﻿{
+  "name": "scanqr",
+  "version": "1.0.0",
+  "description": "Quick QR Tool",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "Thanh Tai",
+  "license": "ISC"
+}

@@ -11,7 +11,7 @@ echo.
 where node >nul 2>nul
 if %ERRORLEVEL% EQU 0 (
     echo [OK] Phat hien Node.js, dang khoi dong Local Server...
-    node local_server.js
+    node server.js
     goto end
 )
 
