@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick QR</title>
+  <meta name="description" content="Công cụ quét nhanh mã QR từ Clipboard (Ctrl+V), Kéo thả, File, Chụp màn hình, Webcam và tải ảnh mã QR về máy tính.">
+  <meta name="author" content="Thành Tài">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <h1>Quick QR</h1>
+            <span class="author-badge">Tác giả: Thành Tài</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="tabs-nav">
+        <button class="tab-btn active" data-tab="scan">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h3M20 7V4h-3M4 17v3h3M20 17v3h-3M9 9h6v6H9z"/></svg>
+          Quét mã QR
+        </button>
+        <button class="tab-btn" data-tab="generate">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Tạo & Tải QR
+        </button>
+      </nav>
+
+      <!-- Header Action Buttons -->
+      <div class="header-actions">
+        <button id="themeToggleBtn" class="icon-btn" title="Chuyển chế độ Sáng / Tối">
+          🌙
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main App Content -->
+  <main class="main-content">
+    
+    <!-- ==================== TAB 1: QUÉT MÃ QR ==================== -->
+    <div id="tab-scan" class="tab-pane active">
+      <div class="tool-grid">
+        
+        <!-- Scanner Input Card -->
+        <div class="card">
+          <div class="card-title">
+            <span>Khu vực quét mã</span>
+            <span style="font-size:0.8rem; font-weight:normal; color:var(--text-muted)">
+              Hỗ trợ <kbd class="kbd-badge">Ctrl + V</kbd> dán ảnh ngay
+            </span>
+          </div>
+
+          <!-- Fast Action Buttons -->
+          <div class="scan-methods-bar">
+            <button id="pasteClipboardBtn" class="method-btn active" title="Dán ảnh từ bộ nhớ tạm (Win + Shift + S rồi dán)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+              Dán ảnh (Ctrl+V)
+            </button>
+            <button id="captureScreenBtn" class="method-btn" title="Chụp màn hình cửa sổ khác, sau đó kéo chuột khoanh vùng mã QR để quét & tải về máy">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              Chụp màn hình
+            </button>
+            <button id="openUrlModalBtn" class="method-btn" title="Quét mã QR từ đường dẫn hình ảnh trên trang web khác">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              Quét từ Link ảnh
+            </button>
+            <button class="method-btn" onclick="const fi = document.getElementById('fileInput'); fi.value = ''; fi.click();">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+              Chọn file ảnh
+            </button>
+            <button id="startCamBtn" class="method-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              Bật Camera
+            </button>
+          </div>
+
+          <!-- Drag and Drop Zone -->
+          <div id="dropZone" class="drop-zone" tabindex="0">
+            <div class="drop-zone-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242M12 12v9m-4-4 4 4 4-4"/></svg>
+            </div>
+            <div class="drop-zone-title">Kéo & thả ảnh mã QR vào đây</div>
+            <div class="drop-zone-subtitle">Thả file từ máy, kéo ảnh trực tiếp từ trang web khác, hoặc bấm để chọn ảnh</div>
+            <div>
+              <span class="kbd-badge">💡 Mẹo: Bấm Win + Shift + S chụp mã QR ở trang bất kỳ rồi nhấn Ctrl + V để quét ngay!</span>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" style="display:none">
+          </div>
+
+          <!-- Camera Stream Container -->
+          <div id="cameraContainer" class="camera-container">
+            <video id="cameraVideo" playsinline></video>
+            <div class="scanner-laser"></div>
+            <div class="camera-controls">
+              <button id="switchCamBtn" class="cam-btn" title="Đổi camera trước/sau">
+                🔄 Đổi cam
+              </button>
+              <button id="stopCamBtn" class="cam-btn stop" title="Đóng camera">
+                ✕ Dừng lại
+              </button>
+            </div>
+          </div>
+
+          <!-- Image Preview & Canvas -->
+          <div id="previewWrapper" class="preview-wrapper">
+            <!-- Canvas Zoom & Action Toolbar -->
+            <div class="canvas-toolbar">
+              <div class="zoom-controls">
+                <button type="button" id="zoomOutBtn" class="zoom-tool-btn" title="Thu nhỏ (hoặc nhấn Ctrl + lăn chuột xuống)">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                </button>
+                <span id="zoomLevelDisplay" class="zoom-level-text" title="Tỷ lệ thu phóng hiện tại">100%</span>
+                <button type="button" id="zoomInBtn" class="zoom-tool-btn" title="Phóng to (hoặc nhấn Ctrl + lăn chuột lên)">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                </button>
+                <div class="zoom-divider"></div>
+                <button type="button" id="zoomFitWidthBtn" class="zoom-tool-btn zoom-btn-pill active" title="Tự động co giãn vừa khít toàn bộ màn hình, không bị hẹp 2 bên">
+                  ↔️ Vừa màn hình
+                </button>
+                <button type="button" id="zoomOriginalBtn" class="zoom-tool-btn zoom-btn-pill" title="Kích thước thật 100% (Pixel-perfect)">
+                  1:1 Gốc
+                </button>
+                <button type="button" id="zoomFitBtn" class="zoom-tool-btn zoom-btn-pill" title="Co toàn cảnh cả chiều ngang và chiều dọc">
+                  Toàn cảnh
+                </button>
+                <button type="button" id="zoom2xBtn" class="zoom-tool-btn zoom-btn-pill" title="Phóng to gấp 2 lần (200%)">
+                  2x
+                </button>
+              </div>
+              <div class="toolbar-actions">
+                <button type="button" id="clearPreviewBtn" class="clear-preview-btn-modern" title="Đóng ảnh này để quét ảnh khác">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  Đóng ảnh
+                </button>
+              </div>
+            </div>
+
+            <!-- Hint notification overlay -->
+            <div id="canvasSelectHint" class="canvas-select-hint" style="display:none">
+              ✂️ Kéo chuột khoanh vùng mã QR trên ảnh để quét chính xác
+            </div>
+
+            <!-- Scrollable Viewport for Zoom & Pan -->
+            <div id="canvasViewport" class="canvas-viewport">
+              <canvas id="scanCanvas"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Scan Results Card -->
+        <div class="card results-card">
+          <div class="card-title">
+            <span>Kết quả & Tải mã QR</span>
+          </div>
+
+          <!-- Placeholder when no result -->
+          <div id="resultPlaceholder" class="result-placeholder">
+            <div class="result-placeholder-icon">🔍</div>
+            <p style="font-weight:600">Chưa có dữ liệu quét</p>
+            <p style="font-size:0.8rem">Dán ảnh (Ctrl+V), kéo ảnh từ trang khác hoặc chụp màn hình để bắt đầu.</p>
+          </div>
+
+          <!-- Scanned Content Display -->
+          <div id="resultContent" class="result-content">
+            <div id="resultBadge" class="result-badge badge-text">Văn bản</div>
+            
+            <!-- Smart Info Card (VietQR, Wi-Fi, etc.) -->
+            <div id="smartInfoCard" class="smart-info-card" style="display:none"></div>
+
+            <!-- Raw Content Box -->
+            <div id="resultTextBox" class="result-text-box"></div>
+
+            <!-- Cropped QR Preview -->
+            <div id="croppedQrSection" class="cropped-qr-section" style="display:none">
+              <div id="croppedQrThumb" class="cropped-qr-thumb"></div>
+              <div class="cropped-qr-info">
+                <p>Ảnh mã QR đã trích xuất</p>
+                <span style="font-size:0.75rem; color:var(--text-muted)">Đã tự động cắt riêng mã QR từ trang nguồn</span>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-btn-group">
+              <!-- Nút tải ảnh mã QR đã crop -->
+              <button id="downloadCroppedBtn" class="btn btn-accent" style="display:none">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                Tải ảnh mã QR này về máy (PNG)
+              </button>
+
+              <!-- Nút tải mã QR siêu nét HD 1024px -->
+              <button id="downloadCrispHdBtn" class="btn btn-primary" style="display:none">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                Tải mã QR mới siêu nét HD (1024px PNG)
+              </button>
+
+              <!-- Nút sao chép ảnh QR vào clipboard -->
+              <button id="copyScannedImageBtn" class="btn btn-outline" style="display:none">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Sao chép ảnh mã QR (Dán Zalo/Word)
+              </button>
+
+              <!-- Nút sao chép nội dung text -->
+              <button id="copyResultBtn" class="btn btn-outline">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                Sao chép nội dung văn bản
+              </button>
+              
+              <!-- Nút mở liên kết nếu có -->
+              <a id="openUrlBtn" class="btn btn-outline" target="_blank" rel="noopener noreferrer" style="display:none">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+                Mở liên kết
+              </a>
+
+              <!-- Chuyển tab sang Generator -->
+              <button id="editInGeneratorBtn" class="btn btn-outline">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Tùy chỉnh mã QR trong tab Tạo QR
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Scan History Section -->
+      <section class="history-section">
+        <div class="history-header">
+          <div style="display:flex; align-items:center; gap:8px">
+            <h2 style="font-size:1.1rem; font-weight:700">Lịch sử quét</h2>
+            <span style="font-size:0.8rem; color:var(--text-muted)">(Tự động lưu trên trình duyệt của bạn)</span>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button id="exportHistoryBtn" class="btn-history-action" title="Xuất toàn bộ dữ liệu ra file Excel / CSV">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>Xuất CSV</span>
+            </button>
+            <button id="clearHistoryBtn" class="btn-history-action btn-danger" title="Xóa toàn bộ lịch sử quét">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+              <span>Xóa hết</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="historyList" class="history-list"></div>
+      </section>
+    </div>
+
+    <!-- ==================== TAB 2: TẠO & TẢI MÃ QR ==================== -->
+    <div id="tab-generate" class="tab-pane">
+      <div class="tool-grid">
+        
+        <!-- Generator Controls Card -->
+        <div class="card">
+          <div class="card-title">
+            <span>Thiết lập nội dung mã QR</span>
+          </div>
+
+          <!-- Preset Types -->
+          <div class="generator-presets">
+            <button class="preset-chip active" data-type="url">🌐 Link Web</button>
+            <button class="preset-chip" data-type="text">📝 Văn bản</button>
+            <button class="preset-chip" data-type="wifi">📶 Wi-Fi</button>
+            <button class="preset-chip" data-type="phone">📞 Điện thoại</button>
+            <button class="preset-chip" data-type="email">✉️ Email</button>
+          </div>
+
+          <!-- Text / Content Input -->
+          <div class="form-group">
+            <label class="form-label" for="qrTextInput">Nội dung hoặc Đường dẫn (URL):</label>
+            <textarea id="qrTextInput" class="form-control" rows="4" placeholder="Nhập đường link web, văn bản hoặc thông tin cần tạo QR...">https://google.com</textarea>
+          </div>
+
+          <!-- Settings Grid -->
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem; margin-bottom:1.25rem;">
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label" for="qrSizeSelect">Độ phân giải tải về:</label>
+              <select id="qrSizeSelect" class="form-control">
+                <option value="256">256 x 256 px (Tiêu chuẩn)</option>
+                <option value="512" selected>512 x 512 px (Sắc nét HD)</option>
+                <option value="1024">1024 x 1024 px (Full HD)</option>
+                <option value="2048">2048 x 2048 px (In ấn 2K/4K)</option>
+              </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label" for="qrCorrectionSelect">Mức độ sửa lỗi:</label>
+              <select id="qrCorrectionSelect" class="form-control">
+                <option value="L">L (Thấp - 7%)</option>
+                <option value="M">M (Trung bình - 15%)</option>
+                <option value="Q">Q (Cao - 25%)</option>
+                <option value="H" selected>H (Rất cao - 30%)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Color Settings -->
+          <div class="color-pickers-row">
+            <div>
+              <label class="form-label">Màu mã QR:</label>
+              <div class="color-input-wrapper">
+                <input type="color" id="qrColorDark" value="#000000">
+                <span style="font-size:0.85rem">Màu nét đen</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="form-label">Màu nền:</label>
+              <div class="color-input-wrapper">
+                <input type="color" id="qrColorLight" value="#ffffff">
+                <span style="font-size:0.85rem">Màu nền trắng</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Preview & Download Card -->
+        <div class="card">
+          <div class="card-title">
+            <span>Xem trước & Tải về</span>
+          </div>
+
+          <div class="qr-preview-box">
+            <div id="qrcodeContainer"></div>
+          </div>
+
+          <div class="action-btn-group">
+            <button id="downloadQrPngBtn" class="btn btn-primary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              Tải ảnh QR về máy (PNG)
+            </button>
+
+            <button id="copyQrImgBtn" class="btn btn-outline">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Sao chép ảnh QR (Dán nhanh vào Zalo, Word)
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <p>Tác giả: <strong>Thành Tài</strong></p>
+  </footer>
+
+  <!-- Modal Dialog -->
+  <div id="appModal" class="modal-overlay" style="display:none">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalTitle">Thông báo</h3>
+        <button id="modalCloseBtn" class="modal-close">&times;</button>
+      </div>
+      <div id="modalBody" class="modal-body"></div>
+    </div>
+  </div>
+
+
+  <!-- Scripts -->
+  <script src="libs/jsQR.js"></script>
+  <script src="libs/qrcode.min.js"></script>
+  <script src="js/scanner.js"></script>
+  <script src="js/generator.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
